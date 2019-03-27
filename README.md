@@ -22,3 +22,9 @@ Guide to use ggbrick is here:
 http://abrahamcow.hatenablog.com/entry/2019/03/25/210148
 
 (in Japanese)
+
+# Author
+
+Ko ABE
+
+Contact: https://twitter.com/abiko_ushi
