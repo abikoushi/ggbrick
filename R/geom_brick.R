@@ -319,9 +319,7 @@ GeomBrick <- ggplot2::ggproto("GeomBrick", ggplot2::Geom,
                         width <- stack_scale * ( dotsize / tdata$maxcount[1] ) / (max(panel_params$x.range) - min(panel_params$x.range))
 
                       }
-                      d <<- tdata
-                      h <<- height
-                      w <<- width
+
                       ggplot2:::ggname("geom_grid",
                                        rectstackGrob(stackaxis = stackaxis, x = tdata$x, y = tdata$y,
                                                      height = height, width = width,
