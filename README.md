@@ -18,10 +18,8 @@ library(ggbrick)
 ~~~
 
 Guide to use ggbrick is here:
-
-http://abrahamcow.hatenablog.com/entry/2019/03/25/210148
-
-(in Japanese)
+http://abrahamcow.hatenablog.com/entry/2019/03/28/034452
+http://abrahamcow.hatenablog.com/entry/2019/03/25/210148 (in Japanese)
 
 # Author
 
