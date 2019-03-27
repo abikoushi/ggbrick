@@ -7,7 +7,7 @@ ggbrick provides the function geom_brick which is a fun alternative to geom_viol
 Install the latest version of this package from Github by pasting in the following.
 
 ~~~R
-devtools::install_github("abikoushi/BERMUDA")
+devtools::install_github("abikoushi/ggbrick")
 ~~~
 
 # Help
