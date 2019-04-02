@@ -63,7 +63,7 @@ If FALSE, overrides the default aesthetics, rather than combining with them. Thi
 }
 \section{Aesthetics}{
 
-\code{geom_dotplot()} understands the following aesthetics (required aesthetics are in bold):
+\code{geom_brick()} understands the following aesthetics (required aesthetics are in bold):
 \itemize{
 \item \strong{\code{x}}
 \item \strong{\code{y}}
