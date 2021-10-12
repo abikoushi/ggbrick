@@ -1,4 +1,5 @@
-####utilities
+###
+# utilities
 "%||%" <- ggplot2:::"%||%"
 rbind_dfs <- ggplot2:::rbind_dfs
 dapply <- ggplot2:::dapply
@@ -7,8 +8,8 @@ new_data_frame <- ggplot2:::new_data_frame
 modify_list <- ggplot2:::modify_list
 id_var <- ggplot2:::id_var
 id <- ggplot2:::id
+###
 
-####
 draw_key_grid <- function(data, params, size) {
   grid::rectGrob(0.5, 0.5, 0.5, 0.5,
                  gp = grid::gpar(
@@ -68,7 +69,6 @@ geom_brick <- function(mapping = NULL, data = NULL,
     )
   )
 }
-
 
 GeomBrick <- ggplot2::ggproto("GeomBrick", ggplot2::Geom,
                     required_aes = c("x", "y"),
@@ -190,7 +190,6 @@ GeomBrick <- ggplot2::ggproto("GeomBrick", ggplot2::Geom,
                     draw_key = draw_key_grid
 )
 
-
 rectstackGrob <- function(
   x = unit(0.5, "npc"),     # x pos of the dotstack's origin
   y = unit(0.5, "npc"),     # y pos of the dotstack's origin
@@ -243,8 +242,6 @@ makeContext.rectstackGrob <- function(x, recording = TRUE) {
   )
 }
 
-
-
 densitybin2 <- function(x, weight = NULL, bins = NULL, binwidth = NULL, range = NULL) {
   if (length(stats::na.omit(x)) == 0) return(new_data_frame())
   if (is.null(weight))  weight <- rep(1, length(x))
@@ -284,7 +281,6 @@ densitybin2 <- function(x, weight = NULL, bins = NULL, binwidth = NULL, range = 
 
   return(results)
 }
-
 
 StatBingrid <- ggplot2::ggproto("StatBingrid", ggplot2::Stat,
                        required_aes = "x",

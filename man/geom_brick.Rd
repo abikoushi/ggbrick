@@ -1,5 +1,6 @@
 \name{geom_brick}
 \alias{geom_brick}
+\alias{GeomBrick}
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{
 geom_brick
@@ -77,13 +78,11 @@ If FALSE, overrides the default aesthetics, rather than combining with them. Thi
 Learn more about setting these aesthetics in \code{vignette("ggplot2-specs")}.
 }
 \author{
-ko ABE
+Ko ABE
 }
 
 %% ~Make other sections like Warning with \section{Warning }{....} ~
 \examples{
-library(ggplot2)
-library(ggbrick)
 ggplot(data = iris) +
   geom_brick(aes(y = Sepal.Length, x=Species), binwidth = 0.1)
 
