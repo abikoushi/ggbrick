@@ -3,7 +3,7 @@ Type: Package
 Title: brick plot
 Version: 0.1.0
 Author: ko ABE
-Maintainer: ko ABE  <yourself@somewhere.net>
+Maintainer: ko ABE <abe.csb@tmd.ac.jp>
 Description: create brick plot based on 'ggplot2'.
 Depends: ggplot2
 Imports: grid, scales

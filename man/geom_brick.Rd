@@ -9,7 +9,7 @@ geom_brick
 In geom_brick, the height of a rectangle corresponds to the bin width and the width of a rectangle corresponds to the counting the number of observations in each bins.}
 \usage{
 geom_brick(mapping = NULL, data = NULL, position = "identity", ...,
-           bins = NULL, binwidth = NULL, binaxis = "y", binpositions = "all",
+           binwidth = NULL, binaxis = "y", binpositions = "all",
            stackdir = "up", stackratio = 1, dotsize = 1, stack_scale = 0.85,
            stackgroups = TRUE, width = 0.9, drop = FALSE, na.rm = FALSE,
            show.legend = NA, inherit.aes = TRUE)
@@ -25,9 +25,6 @@ Position adjustment, either as a string, or the result of a call to a position a
 }
   \item{\dots}{
 Other arguments passed on to layer(). These are often aesthetics, used to set an aesthetic to a fixed value, like colour = "red" or size = 3. They may also be parameters to the paired geom/stat.
-}
-  \item{bins}{
-Number of bins. Overridden by binwidth. Defaults to 30
 }
   \item{binwidth}{
 This specifies maximum bin width. When method is "histodot", this specifies bin width. Defaults to 1/30 of the range of the data}

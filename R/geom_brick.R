@@ -1,15 +1,8 @@
 ###
 # utilities
 "%||%" <- ggplot2:::"%||%"
-rbind_dfs <- ggplot2:::rbind_dfs
 dapply <- ggplot2:::dapply
-df_rows <- ggplot2:::df_rows
-new_data_frame <- ggplot2:::new_data_frame
-modify_list <- ggplot2:::modify_list
-id_var <- ggplot2:::id_var
-id <- ggplot2:::id
 ###
-
 draw_key_grid <- function(data, params, size) {
   grid::rectGrob(0.5, 0.5, 0.5, 0.5,
                  gp = grid::gpar(
@@ -42,11 +35,11 @@ geom_brick <- function(mapping = NULL, data = NULL,
   if (!is.null(position) &&
       (identical(position, "stack") || (inherits(position, "PositionStack"))))
     message("position=\"stack\" doesn't work properly with geom_dotplot. Use stackgroups=TRUE instead.")
-
+  # if (is.null(binwidth) && !is.null(bins)){binwidth <- diff(range) / bins}
   layer(
     data = data,
     mapping = mapping,
-    stat = StatBingrid,
+    stat = ggplot2::StatBindot,
     geom = GeomBrick,
     position = position,
     show.legend = show.legend,
@@ -54,7 +47,7 @@ geom_brick <- function(mapping = NULL, data = NULL,
     # Need to make sure that the binaxis goes to both the stat and the geom
     params = list(
       binaxis = binaxis,
-      bins = bins,
+      #bins = bins,
       binwidth = binwidth,
       binpositions = binpositions,
       width = width,
@@ -74,7 +67,7 @@ GeomBrick <- ggplot2::ggproto("GeomBrick", ggplot2::Geom,
                     required_aes = c("x", "y"),
                     non_missing_aes = c("size", "shape"),
 
-                    default_aes = ggplot2::aes(colour = "black", fill = "white", alpha = NA, stroke = 1, linetype = "solid"),
+                    default_aes = ggplot2::aes(colour = "grey30", fill = "white", alpha = NA, stroke = 1, linetype = "solid"),
 
                     setup_data = function(data, params) {
                       data$width <- data$width %||%
@@ -98,7 +91,6 @@ GeomBrick <- ggplot2::ggproto("GeomBrick", ggplot2::Geom,
                         stackaxismin <- -.5
                         stackaxismax <- .5
                       }
-
                       # Fill the bins: at a given x (or y), if count=3, make 3 entries at that x
                       # if(!is.null(data$count)){
                       data <- data[rep(1:nrow(data), data$count), ]
@@ -144,7 +136,6 @@ GeomBrick <- ggplot2::ggproto("GeomBrick", ggplot2::Geom,
 
                         data$xmin <- data$x + data$width * stackaxismin
                         data$xmax <- data$x + data$width * stackaxismax
-
                         # Unlike with y above, don't change x because it will cause problems with dodging
                       }
                       data$maxcount <- max(data$countidx)
@@ -156,7 +147,7 @@ GeomBrick <- ggplot2::ggproto("GeomBrick", ggplot2::Geom,
                                           binaxis = "x", stackdir = "up", stackratio = 1,
                                           dotsize = 1, stack_scale = 0.9, stackgroups = FALSE) {
                       if (!coord$is_linear()) {
-                        warning("geom_dotplot does not work properly with non-linear coordinates.")
+                        warning("geom_brick does not work properly with non-linear coordinates.")
                       }
 
                       tdata <- coord$transform(data, panel_params)
@@ -241,161 +232,3 @@ makeContext.rectstackGrob <- function(x, recording = TRUE) {
     name = x$name, gp = x$gp, vp = x$vp
   )
 }
-
-densitybin2 <- function(x, weight = NULL, bins = NULL, binwidth = NULL, range = NULL) {
-  if (length(stats::na.omit(x)) == 0) return(new_data_frame())
-  if (is.null(weight))  weight <- rep(1, length(x))
-  weight[is.na(weight)] <- 0
-
-  if (is.null(range))    range <- range(x, na.rm = TRUE, finite = TRUE)
-  if (is.null(binwidth)) binwidth <- diff(range) / bins
-
-  # Sort weight and x, by x
-  weight <- weight[order(x)]
-  x      <- x[order(x)]
-
-  cbin    <- 0                      # Current bin ID
-  bin     <- rep.int(NA, length(x)) # The bin ID for each observation
-  binend  <- -Inf                   # End position of current bin (scan left to right)
-
-  # Scan list and put dots in bins
-  for (i in 1:length(x)) {
-    # If past end of bin, start a new bin at this point
-    if (x[i] >= binend) {
-      binend <- x[i] + binwidth
-      cbin <- cbin + 1
-    }
-    bin[i] <- cbin
-  }
-
-  results <- new_data_frame(list(
-    x = x,
-    bin = bin,
-    binwidth = binwidth,
-    weight = weight
-  ), n = length(x))
-  results <- dapply(results, "bin", function(df) {
-    df$bincenter = min(df$x)# + max(df$x)) / 2
-    return(df)
-  })
-
-  return(results)
-}
-
-StatBingrid <- ggplot2::ggproto("StatBingrid", ggplot2::Stat,
-                       required_aes = "x",
-                       non_missing_aes = "weight",
-                       default_aes = ggplot2::aes(y = stat(count)),
-
-                       setup_params = function(data, params) {
-                         if (is.null(params$binwidth) && is.null(params$bins)) {
-                           message("`stat_bingrid()` using `bins = 30`. Pick better value with `binwidth`.")
-                           params$bins <- 30
-                         }
-                         params
-                       },
-
-                       compute_layer = function(self, data, params, panels) {
-                         data <- remove_missing(data, params$na.rm,
-                                                params$binaxis,
-                                                ggplot2:::snake_class(self),
-                                                finite = TRUE
-                         )
-                         ggproto_parent(Stat, self)$compute_layer(data, params, panels)
-                       },
-
-                       compute_panel = function(self, data, scales, na.rm = FALSE, bins=NULL, binwidth = NULL,
-                                                binaxis = "x",
-                                                binpositions = "bygroup", origin = NULL,
-                                                width = 0.9, drop = FALSE,
-                                                right = TRUE) {
-
-                         # If using dotdensity and binning over all, we need to find the bin centers
-                         # for all data before it's split into groups.
-                         # if (method == "dotdensity" && binpositions == "all") {
-                         if (binpositions == "all") {
-                           if (binaxis == "x") {
-                             newdata <- densitybin2(x = data$x, weight = data$weight, bins = bins, binwidth = binwidth)
-
-                             data    <- data[order(data$x), ]
-                             newdata <- newdata[order(newdata$x), ]
-
-                           } else if (binaxis == "y") {
-                             newdata <- densitybin2(x = data$y, weight = data$weight, bins = bins, binwidth = binwidth)
-
-                             data    <- data[order(data$y), ]
-                             newdata <- newdata[order(newdata$x), ]
-                           }
-
-                           data$bin       <- newdata$bin
-                           data$binwidth  <- newdata$binwidth
-                           data$weight    <- newdata$weight
-                           data$bincenter <- newdata$bincenter
-
-                         }
-
-                         ggproto_parent(Stat, self)$compute_panel(data, scales, bins = bins, binwidth = binwidth, stack_scale = stack_scale,
-                                                                  binaxis = binaxis, binpositions = binpositions,
-                                                                  origin = origin, width = width, drop = drop,
-                                                                  right = right)
-                       },
-
-                       compute_group = function(self, data, scales, bins=NULL, binwidth = NULL, stack_scale = 0.9, binaxis = "x",
-                                                binpositions = "bygroup",
-                                                origin = NULL, width = 0.9, drop = FALSE,
-                                                right = TRUE) {
-
-                         # This function taken from integer help page
-                         is.wholenumber <- function(x, tol = .Machine$double.eps ^ 0.5) {
-                           abs(x - round(x)) < tol
-                         }
-
-                         # Check that weights are whole numbers (for dots, weights must be whole)
-                         if (!is.null(data$weight) && any(!is.wholenumber(data$weight)) &&
-                             any(data$weight < 0)) {
-                           stop("Weights for stat_bindot must be nonnegative integers.")
-                         }
-
-                         if (binaxis == "x") {
-                           range   <- scales$x$dimension()
-                           values  <- data$x
-                         } else if (binaxis == "y") {
-                           range  <- scales$y$dimension()
-                           values <- data$y
-                           # The middle of each group, on the stack axis
-                           midline <- mean(range(data$x))
-                         }
-
-                         # If bin centers are found by group instead of by all, find the bin centers
-                         # (If binpositions=="all", then we'll already have bin centers.)
-                         if (binpositions == "bygroup")
-                           data <- densitybin2(x = values, weight = data$weight, bins = bins, binwidth = binwidth,
-                                               range = range)
-
-                         # Collapse each bin and get a count
-                         data <- dapply(data, "bincenter", function(x) {
-                           new_data_frame(list(
-                             binwidth = .subset2(x, "binwidth")[1],
-                             count = sum(.subset2(x, "weight"))
-                           ))
-                         })
-
-                         if (sum(data$count, na.rm = TRUE) != 0) {
-                           data$count[is.na(data$count)] <- 0
-                           data$ncount <- data$count / max(abs(data$count), na.rm = TRUE)
-                           if (drop) data <- subset(data, count > 0)
-                         }
-                         # }
-
-                         if (binaxis == "x") {
-                           names(data)[names(data) == "bincenter"] <- "x"
-                           # For x binning, the width of the geoms is same as the width of the bin
-                           data$width <- data$binwidth
-                         } else if (binaxis == "y") {
-                           names(data)[names(data) == "bincenter"] <- "y"
-                           # For y binning, set the x midline. This is needed for continuous x axis
-                           data$x <- midline
-                         }
-                         return(data)
-                       }
-)

@@ -8,7 +8,7 @@ ggplot(data = iris) +
   geom_brick(aes(y = Sepal.Length, x=Species), binwidth = 0.5)
 
 ggplot(data = iris) +
-  geom_brick(aes(y = Sepal.Length, x=Species), binwidth = 0.5, fill = "black")
+  geom_brick(aes(y = Sepal.Length, x=Species), binwidth = 0.5, fill = "grey30")
 
 ggplot(data = mpg,aes(y = cty, x=factor(year), fill=factor(cyl))) +
   geom_brick(binwidth = 1)
@@ -26,6 +26,6 @@ ggplot(data = diamonds, aes(x = color, y=carat, colour=cut)) +
 
 ggplot(data = iris,aes(y = Sepal.Length, x=Species)) +
   geom_brick(binwidth = 0.1, stackdir = "centerwhole")+
-  stat_summary(fun.y = median, fun.ymin = median, fun.ymax = median,
+  stat_summary(fun = median, fun.ymin = median, fun.ymax = median,
                geom = "crossbar")
 
