@@ -16,3 +16,5 @@ devtools::install_github("abikoushi/ggbrick")
 library(ggbrick)
 ?geom_brick
 ~~~
+
+Some demonstrations can be found in the [gallery](example/example.md).

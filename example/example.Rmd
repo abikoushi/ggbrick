@@ -1,5 +1,18 @@
+---
+title: "Chart Gallery"
+author: "Ko ABE"
+date: "2024-02-07"
+output: github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Plots
+
+```{r iris}
 library(ggbrick)
-# devtools::install_github("abikoushi/ggbrick")
 
 ggplot(data = iris) +
   geom_brick(aes(y = Sepal.Length, x=Species), binwidth = 0.1)
@@ -12,7 +25,9 @@ ggplot(data = iris) +
 
 ggplot(data = mpg,aes(y = cty, x=factor(year), fill=factor(cyl))) +
   geom_brick(binwidth = 1)
+```
 
+```{r mpg}
 ggplot(data = mpg,aes(y = cty, x=factor(year), fill=factor(cyl))) +
   geom_brick(binwidth = 1, stackgroups = FALSE, alpha = 0.5)
 
@@ -23,8 +38,10 @@ ggplot(data = mpg,aes(y = cty, x=factor(year), fill=factor(cyl))) +
 ggplot(data = diamonds, aes(x = color, y=carat, colour=cut)) +
   geom_brick(binwidth=0.2) +
   coord_flip()
+```
 
-ggplot(data = iris,aes(y = Sepal.Length, x=Species)) +
+```{r comb}
+ggplot(data = iris ,aes(y = Sepal.Length, x=Species)) +
   geom_brick(binwidth = 0.1)+
   stat_summary(fun = median, fun.min = median, fun.max = median,
                geom = "crossbar")
@@ -32,4 +49,5 @@ ggplot(data = iris,aes(y = Sepal.Length, x=Species)) +
 ggplot(data = iris,aes(y = Sepal.Length, x=Species)) +
   geom_boxplot(alpha=0.1)+
   geom_brick(binwidth = 0.1)
+```
 
